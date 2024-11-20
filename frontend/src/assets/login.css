@@ -1,0 +1,31 @@
+.card{
+    width: 40%;
+    height: 50%;
+    padding: 8px;
+    margin: 8px;
+    margin-top: 150px;
+    border-radius: 8px;
+    color: black;
+    border: none;
+    background-color: #A7BEAE;
+}
+
+.login-container{
+    background-color: #A7BEAE; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    height: 100vh; 
+    margin-bottom: 20px;
+}
+
+.login{
+    font-family: poppins,sans-serif;
+    text-align: center;
+    font-weight: bold;
+}
+
+.links{
+    display: flex;
+    justify-content: space-between;
+}

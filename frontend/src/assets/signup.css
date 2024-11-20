@@ -1,0 +1,29 @@
+.signup-card{
+    width: 40%;
+    padding: 8px;
+    margin: 8px;
+    margin-top: 80px;
+    border-radius: 8px;
+    color: black;
+    background-color: #A7BEAE;
+    border: none;
+
+}
+
+.signup-container{
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    background-color: #A7BEAE;
+    height: 100vh;
+}
+.signup{
+    font-family: poppins,sans-serif;
+    text-align: center;
+    font-weight: bold;
+}
+
+.links{
+    display: flex;
+    justify-content: space-between;
+}

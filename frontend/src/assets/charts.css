@@ -1,0 +1,32 @@
+  .dashboard-card {
+    transition: transform 0.2s;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .kpi-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #2c3e50;
+  }
+  
+  .kpi-label {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+  }
+  
+  .chart-container {
+    position: relative;
+    height: 300px;
+    margin-bottom: 1rem;
+  }
+
+  .returnlink{
+    color: white;
+  }
+  
