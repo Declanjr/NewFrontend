@@ -2,56 +2,69 @@ import React, { useState } from "react";
 import "../assets/DriverCreate.css";
 
 const AddDriverForm = () => {
-  // State to manage form fields
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     phone: "",
     address: "",
     gender: "",
-    fileName: null,
   });
 
-  // Handle input changes
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    setFormData({
-      ...formData,
-      [name]: files ? files[0] : value,
-    });
+    const { name, value } = e.target;
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: value
+    }));
   };
 
-  // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const formDataObj = new FormData();
-    Object.keys(formData).forEach((key) => {
-      formDataObj.append(key, formData[key]);
-    });
+    setLoading(true);
+    setError(null);
 
-    // Simulate a POST request
-    fetch("StaffDriver/drivercreate", {
-      method: "POST",
-      body: formDataObj,
-    })
-      .then((response) => {
-        if (response.ok) {
-          alert("Driver added successfully!");
-        } else {
-          alert("Error submitting the form.");
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-        alert("Error submitting the form.");
+    try {
+      const response = await fetch("http://localhost:8080/Driver/create-driver", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(formData)
       });
-  };
+
+      if (!response.ok) {
+        const errorData = await response.text();
+        throw new Error(errorData || `Error: ${response.status}`);
+      }
+
+      // Clear form after successful submission
+      setFormData({
+        firstName: "",
+        lastName: "",
+        phone: "",
+        address: "",
+        gender: "",
+      });
+
+      alert("Driver added successfully!");
+      window.location.href = "/Driver";
+    } catch (err) {
+      setError(err.message || "Failed to add driver. Please try again.");
+      console.error("Error:", err);
+    } finally {
+      setLoading(false);
+    }
+};
 
   return (
     <div className="form-container">
       <h2 className="form-title">Add New Driver</h2>
-      <form onSubmit={handleSubmit} encType="multipart/form-data">
-        {/* First Name */}
+      {error && <div className="alert alert-danger">{error}</div>}
+      <form onSubmit={handleSubmit}>
         <div className="mb-3">
           <label htmlFor="firstName" className="form-label">
             First Name
@@ -68,7 +81,6 @@ const AddDriverForm = () => {
           />
         </div>
 
-        {/* Last Name */}
         <div className="mb-3">
           <label htmlFor="lastName" className="form-label">
             Last Name
@@ -85,7 +97,6 @@ const AddDriverForm = () => {
           />
         </div>
 
-        {/* Phone */}
         <div className="mb-3">
           <label htmlFor="phone" className="form-label">
             Phone
@@ -102,7 +113,6 @@ const AddDriverForm = () => {
           />
         </div>
 
-        {/* Address */}
         <div className="mb-3">
           <label htmlFor="address" className="form-label">
             Address
@@ -119,7 +129,6 @@ const AddDriverForm = () => {
           />
         </div>
 
-        {/* Gender */}
         <div className="mb-3">
           <label htmlFor="gender" className="form-label">
             Gender
@@ -141,12 +150,15 @@ const AddDriverForm = () => {
           </select>
         </div>
 
-        {/* Actions */}
         <div className="form-actions">
-          <button type="submit" className="btn btn-primary">
-            Submit
+          <button 
+            type="submit" 
+            className="btn btn-primary"
+            disabled={loading}
+          >
+            {loading ? "Submitting..." : "Submit"}
           </button>
-          <a href="Driver" className="btn btn-outline-secondary">
+          <a href="/Driver" className="btn btn-outline-secondary">
             Cancel
           </a>
         </div>

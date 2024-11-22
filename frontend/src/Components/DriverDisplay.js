@@ -5,10 +5,12 @@ import '../assets/DriverDisplay.css';
 const StaffHome = () => {
   const navigate = useNavigate();
   const [drivers, setDrivers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
   const [genderFilter, setGenderFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
-  const rowsPerPage = 4;
+  const rowsPerPage = 3;
   const [sortDirection, setSortDirection] = useState(true);
   const [language, setLanguage] = useState("en");
 
@@ -50,31 +52,48 @@ const StaffHome = () => {
 
   const translate = (key) => resources[language][key] || key;
 
+  // Fetch drivers from the backend API
+  const fetchDrivers = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('http://localhost:8080/Driver');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setDrivers(data);
+      setError(null);
+    } catch (err) {
+      setError(err.message);
+      setDrivers([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    // Fetch drivers from API or backend (replace with actual API)
-    const fetchedDrivers = [
-      {
-        id: 1,
-        firstName: "John",
-        lastName: "Doe",
-        phone: "123456789",
-        address: "123 Main St",
-        gender: "Male",
-        fileName: "license.pdf",
-      },
-      {
-        id: 2,
-        firstName: "Jane",
-        lastName: "Smith",
-        phone: "987654321",
-        address: "456 Elm St",
-        gender: "Female",
-        fileName: "certificate.pdf",
-      },
-      // Add more dummy drivers
-    ];
-    setDrivers(fetchedDrivers);
+    fetchDrivers();
   }, []);
+
+  // Delete driver function
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this driver?')) {
+      try {
+        const response = await fetch(`http://localhost:8080/Driver/${id}`, {
+          method: 'DELETE',
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        // Refresh the drivers list after successful deletion
+        fetchDrivers();
+      } catch (err) {
+        setError(err.message);
+      }
+    }
+  };
 
   // Filter, Search, and Paginate
   const filteredDrivers = drivers.filter((driver) => {
@@ -91,6 +110,12 @@ const StaffHome = () => {
     (currentPage + 1) * rowsPerPage
   );
 
+  // ... existing helper functions (handleSearch, handleGenderFilter, etc.) ...
+
+  const handleEdit = (id) => {
+    navigate(`/edit-driver/${id}`);
+  };
+
   const handleSearch = (e) => {
     setSearch(e.target.value);
     setCurrentPage(0); // Reset to the first page
@@ -99,37 +124,6 @@ const StaffHome = () => {
   const handleGenderFilter = (e) => {
     setGenderFilter(e.target.value);
     setCurrentPage(0); // Reset to the first page
-  };
-
-  const handleNextPage = () => {
-    if ((currentPage + 1) * rowsPerPage < filteredDrivers.length) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
-
-  const handlePrevPage = () => {
-    if (currentPage > 0) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
-  const sortTable = (column) => {
-    const sortedDrivers = [...drivers].sort((a, b) => {
-      const valA = a[column];
-      const valB = b[column];
-      if (column === "id") {
-        return sortDirection ? valA - valB : valB - valA;
-      }
-      return sortDirection
-        ? valA.localeCompare(valB)
-        : valB.localeCompare(valA);
-    });
-    setDrivers(sortedDrivers);
-    setSortDirection(!sortDirection);
-  };
-
-  const changeLanguage = (e) => {
-    setLanguage(e.target.value);
   };
 
   const downloadCSV = () => {
@@ -147,11 +141,43 @@ const StaffHome = () => {
     link.click();
   };
 
+  const sortTable = (column) => {
+    const sortedDrivers = [...drivers].sort((a, b) => {
+      const valA = a[column];
+      const valB = b[column];
+      if (column === "id") {
+        return sortDirection ? valA - valB : valB - valA;
+      }
+      return sortDirection
+        ? valA.localeCompare(valB)
+        : valB.localeCompare(valA);
+    });
+    setDrivers(sortedDrivers);
+    setSortDirection(!sortDirection);
+  };
+
+  const handleNextPage = () => {
+    if ((currentPage + 1) * rowsPerPage < filteredDrivers.length) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const changeLanguage = (e) => {
+    setLanguage(e.target.value);
+  };
+
+
   return (
     <div className="driver-container">
       <div className="sidebar">
-        <div className="sidebar-header">{translate("dashboardTitle")}</div>
-        <ul className="sidebar-menu">
+      <div className="sidebar-header">{translate("dashboardTitle")}</div>
+      <ul className="sidebar-menu">
           <li>
             <Link to="/">{translate("home")}</Link>
           </li>
@@ -177,76 +203,103 @@ const StaffHome = () => {
 
       <div className="main-content">
         <h1>{translate("driverDashboard")}</h1>
-        <div className="actions">
-          <button
-            className="btn btn-secondary"
-            onClick={() => navigate("/create-driver")}
-          >
-            {translate("insertNewDriver")}
-          </button>
-        </div>
+        
+        {error && (
+          <div className="alert alert-danger" role="alert">
+            {translate("error")}: {error}
+          </div>
+        )}
 
-        <div className="search-filter">
-          <input
-            type="text"
-            placeholder="Search"
-            className="form-control"
-            value={search}
-            onChange={handleSearch}
-          />
-          <select
-            className="form-control"
-            value={genderFilter}
-            onChange={handleGenderFilter}
-          >
-            <option value="">{translate("filterByGender")}</option>
-            <option value="Male">{translate("male")}</option>
-            <option value="Female">{translate("female")}</option>
-          </select>
+        {loading ? (
+          <div className="loading">{translate("loading")}</div>
+        ) : (
+          <>
+            <div className="actions">
+              <button
+                className="btn btn-secondary"
+                onClick={() => navigate("/create-driver")}
+              >
+                {translate("insertNewDriver")}
+              </button>
+            </div>
 
-          <button className="btn btn-secondary" onClick={downloadCSV}>
-            {translate("downloadRecords")}
-          </button>
-        </div>
+            <div className="search-filter">
+              <input
+                type="text"
+                placeholder="Search"
+                className="form-control"
+                value={search}
+                onChange={handleSearch}
+              />
+              <select
+                className="form-control"
+                value={genderFilter}
+                onChange={handleGenderFilter}
+              >
+                <option value="">{translate("filterByGender")}</option>
+                <option value="Male">{translate("male")}</option>
+                <option value="Female">{translate("female")}</option>
+              </select>
 
-        <table id="driverTable">
-          <thead>
-            <tr>
-              <th onClick={() => sortTable("id")}>{translate("ID")}</th>
-              <th onClick={() => sortTable("firstName")}>
-                {translate("Names")}
-              </th>
-              <th>{translate("Phone")}</th>
-              <th>{translate("Address")}</th>
-              <th>{translate("Gender")}</th>
-              <th>{translate("Action")}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {paginatedDrivers.map((driver) => (
-              <tr key={driver.id}>
-                <td>{driver.id}</td>
-                <td>{`${driver.firstName} ${driver.lastName}`}</td>
-                <td>{driver.phone}</td>
-                <td>{driver.address}</td>
-                <td>{driver.gender}</td>
-                <td>
-                  <button className="btn btn-primary btn-sm">
-                    {translate("edit")}
-                  </button>
-                  <button className="btn btn-danger btn-sm">
-                    {translate("delete")}
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+              <button className="btn btn-secondary" onClick={downloadCSV}>
+                {translate("downloadRecords")}
+              </button>
+            </div>
 
-        <div className="pagination">
-          <button onClick={handlePrevPage}>Previous</button>
-          <button onClick={handleNextPage}>Next</button>
-        </div>
+            <table id="driverTable">
+              <thead>
+                <tr>
+                  <th onClick={() => sortTable("id")}>ID</th>
+                  <th onClick={() => sortTable("firstName")}>Names</th>
+                  <th>Phone</th>
+                  <th>Address</th>
+                  <th>Gender</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paginatedDrivers.map((driver) => (
+                  <tr key={driver.id}>
+                    <td>{driver.id}</td>
+                    <td>{`${driver.firstName} ${driver.lastName}`}</td>
+                    <td>{driver.phone}</td>
+                    <td>{driver.address}</td>
+                    <td>{driver.gender}</td>
+                    <td>
+                      <button 
+                        className="btn btn-primary btn-sm"
+                        onClick={() => handleEdit(driver.id)}
+                      >
+                        {translate("edit")}
+                      </button>
+                      <button 
+                        className="btn btn-danger btn-sm"
+                        onClick={() => handleDelete(driver.id)}
+                      >
+                        {translate("delete")}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            <div className="pagination">
+              <button 
+                onClick={handlePrevPage}
+                disabled={currentPage === 0}
+              >
+                Previous
+              </button>
+              <button 
+                onClick={handleNextPage}
+                disabled={(currentPage + 1) * rowsPerPage >= filteredDrivers.length}
+              >
+                Next
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

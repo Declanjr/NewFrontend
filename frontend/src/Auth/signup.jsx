@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../assets/signup.css'
 
 const Signup = () => {
+  const navigate = useNavigate();
   // State for form fields
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    firstname: '',
+    lastname: '',
     email: '',
     username: '',
-    dob: '',
-    phone: '',
+    date: '',
+    number: '',
     password: '',
     confirmPassword: ''
   });
@@ -28,10 +30,10 @@ const Signup = () => {
     e.preventDefault();
 
     // Destructure form data
-    const { firstName, lastName, email, username, dob, phone, password, confirmPassword } = formData;
+    const { firstname, lastname, email, username, date, number, password, confirmPassword } = formData;
 
     // Check if all fields are filled
-    if (!firstName || !lastName || !email || !username || !dob || !phone || !password || !confirmPassword) {
+    if (!firstname || !lastname || !email || !username || !date || !number || !password || !confirmPassword) {
       alert("Please fill in all fields.");
       return;
     }
@@ -44,16 +46,16 @@ const Signup = () => {
 
     // Construct data to send
     const data = {
-      firstName,
-      lastName,
+      firstname,
+      lastname,
       email,
       username,
-      dob,
-      phone,
+      date: new Date(date), // Convert date to Date object
+      number: parseInt(number), // Convert to number
       password
     };
 
-    // Send data to server (replace '/signup' with your API endpoint)
+    // Send data to server
     fetch('/signup', {
       method: 'POST',
       headers: {
@@ -63,24 +65,29 @@ const Signup = () => {
     })
       .then(response => {
         if (response.ok) {
-          alert("Registration successful!");
-          setFormData({
-            firstName: '',
-            lastName: '',
-            email: '',
-            username: '',
-            dob: '',
-            phone: '',
-            password: '',
-            confirmPassword: ''
-          }); // Clear form on success
-        } else {
-          alert("Registration failed. Please try again.");
+          return response.json(); // Parse the response
         }
+        throw new Error('Registration failed');
+      })
+      .then(savedUser => {
+        alert("Registration successful!");
+        navigate('/login');
+        console.log('Saved user:', savedUser);
+        // Reset form
+        setFormData({
+          firstname: '',
+          lastname: '',
+          email: '',
+          username: '',
+          date: '',
+          number: '',
+          password: '',
+          confirmPassword: ''
+        });
       })
       .catch(error => {
         console.error("Error:", error);
-        alert("An error occurred. Please try again.");
+        alert(error.message || "An error occurred. Please try again.");
       });
   };
 
@@ -94,8 +101,8 @@ const Signup = () => {
             type="text"
             className="form-control"
             id="fname"
-            name="firstName"
-            value={formData.firstName}
+            name="firstname"
+            value={formData.firstname}
             onChange={handleChange}
             placeholder="Enter First Name"
             required
@@ -107,8 +114,8 @@ const Signup = () => {
             type="text"
             className="form-control"
             id="lname"
-            name="lastName"
-            value={formData.lastName}
+            name="lastname"
+            value={formData.lastname}
             onChange={handleChange}
             placeholder="Enter Last Name"
             required
@@ -145,9 +152,9 @@ const Signup = () => {
           <input
             type="date"
             className="form-control"
-            id="dob"
-            name="dob"
-            value={formData.dob}
+            id="date"
+            name="date"
+            value={formData.date}
             onChange={handleChange}
             placeholder="Enter Date of Birth"
             required
@@ -158,9 +165,9 @@ const Signup = () => {
           <input
             type="tel"
             className="form-control"
-            id="phone"
-            name="phone"
-            value={formData.phone}
+            id="number"
+            name="number"
+            value={formData.number}
             onChange={handleChange}
             placeholder="Enter Phone Number"
             required

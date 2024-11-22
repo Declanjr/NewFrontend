@@ -8,6 +8,7 @@ import Home from "./Pages/StaffHome"
 import Driver from "./Pages/DriverDisplay"
 import CreateDriver from "./Pages/DriverCreate"
 import NotFound from "./Pages/404";
+import ProtectedRoute from "./Routes/ProtectedRoute";
 
 function App() {
   return (
@@ -19,9 +20,27 @@ function App() {
         <Route path="/charts" element={<Charts />} />
         <Route path="/signup" element={<Signup />} />
         {/* Protected Route */}
-        <Route path="/home" element={<Home />} />
-        <Route path="/driver" element={<Driver />} />
-        <Route path="/create-driver" element={<CreateDriver />} />
+        <Route 
+          path="/Home" 
+          element={
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route path="/driver" element={
+          <ProtectedRoute>
+            <Driver />
+          </ProtectedRoute>
+          } />
+
+        <Route path="/create-driver" element={
+          <ProtectedRoute>
+            <CreateDriver />
+          </ProtectedRoute>
+          } />
+          
         {/* Default Route */}
         <Route path="*" element={<NotFound />} />
       </Routes>

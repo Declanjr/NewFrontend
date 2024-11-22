@@ -1,16 +1,19 @@
 package com.auca.Logistics.Controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.auca.Logistics.Model.LoginRequest;
 import com.auca.Logistics.Service.AuthenticationService;
 
-@Controller
+@RestController
 public class LoginController {
-
     private final AuthenticationService authenticationService;
 
     @Autowired
@@ -19,18 +22,22 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String login(
-            @RequestParam String username,
-            @RequestParam String password,
-            Model model) {
-        
-        boolean isAuthenticated = authenticationService.authenticate(username, password);
-        
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        boolean isAuthenticated = authenticationService.authenticate(
+            loginRequest.getUsername(), 
+            loginRequest.getPassword()
+        );
+
         if (isAuthenticated) {
-            return "redirect:/StaffHome";
+            // Return a success response with user details or a token
+            return ResponseEntity.ok().body(Map.of(
+                "message", "Login successful",
+                "username", loginRequest.getUsername()
+            ));
         } else {
-            model.addAttribute("error", "Invalid username or password");
-            return "login";
+            // Return an unauthorized response
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "Invalid username or password"));
         }
     }
 }
