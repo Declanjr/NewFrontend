@@ -47,7 +47,38 @@ const StaffHome = () => {
       edit: "Editar",
       delete: "Eliminar",
     },
-    // Add more languages here
+    rw: {
+      dashboardTitle: "Ibikoresho By'ibanze",
+      home: "Ahabanza",
+      drivers: "Abashoferi",
+      shipments: "Ibicuruzwa",
+      logout: "Gusohoka",
+      chooseLanguage: "Hitamo ururimi",
+      driverDashboard: "IBIKORESHO BY'ABASHOFERI",
+      insertNewDriver: "Shyiramo Umushoferi Mushya",
+      filterByGender: "Shungura ukurikije igitsina",
+      male: "Gabo",
+      female: "Gore",
+      downloadRecords: "Kuramo inyandiko",
+      edit: "Hindura",
+      delete: "Siba",
+    },
+    fr: {
+      dashboardTitle: "Tableau de bord",
+      home: "Accueil",
+      drivers: "Chauffeurs",
+      shipments: "Expéditions",
+      logout: "Se déconnecter",
+      chooseLanguage: "Choisir la langue",
+      driverDashboard: "TABLEAU DE BORD DES CHAUFFEURS",
+      insertNewDriver: "Insérer un nouveau chauffeur",
+      filterByGender: "Filtrer par genre",
+      male: "Homme",
+      female: "Femme",
+      downloadRecords: "Télécharger les dossiers",
+      edit: "Modifier",
+      delete: "Supprimer",
+    },    
   };
 
   const translate = (key) => resources[language][key] || key;
@@ -195,7 +226,8 @@ const StaffHome = () => {
             <select id="languageSelect" onChange={changeLanguage}>
               <option value="en">English</option>
               <option value="es">Spanish</option>
-              {/* Add more options */}
+              <option value="rw">Kinyarwanda</option>
+              <option value="fr">French</option>
             </select>
           </li>
         </ul>

@@ -9,6 +9,7 @@ import Driver from "./Pages/DriverDisplay"
 import CreateDriver from "./Pages/DriverCreate"
 import NotFound from "./Pages/404";
 import ProtectedRoute from "./Routes/ProtectedRoute";
+import DriverEdit from "./Pages/DriverEdit";
 
 function App() {
   return (
@@ -38,6 +39,12 @@ function App() {
         <Route path="/create-driver" element={
           <ProtectedRoute>
             <CreateDriver />
+          </ProtectedRoute>
+          } />
+
+        <Route path="/edit-driver/:id" element={
+          <ProtectedRoute>
+            <DriverEdit />
           </ProtectedRoute>
           } />
           
