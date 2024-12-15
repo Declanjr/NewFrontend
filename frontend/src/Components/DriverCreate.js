@@ -27,7 +27,7 @@ const AddDriverForm = () => {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:8080/Driver/create-driver", {
+      const response = await fetch("https://driverbackend.onrender.com/Driver/create-driver", {
         method: "POST",
         headers: {
           'Content-Type': 'application/json',

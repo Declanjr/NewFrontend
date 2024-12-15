@@ -87,7 +87,7 @@ const StaffHome = () => {
   const fetchDrivers = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:8080/Driver');
+      const response = await fetch('https://driverbackend.onrender.com/Driver');
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -110,7 +110,7 @@ const StaffHome = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this driver?')) {
       try {
-        const response = await fetch(`http://localhost:8080/Driver/${id}`, {
+        const response = await fetch(`https://driverbackend.onrender.com/Driver/${id}`, {
           method: 'DELETE',
         });
         

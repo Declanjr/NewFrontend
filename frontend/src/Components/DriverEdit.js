@@ -17,7 +17,7 @@ const EditDriver = () => {
   useEffect(() => {
     const fetchDriver = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/Driver/${id}`);
+        const response = await fetch(`https://driverbackend.onrender.com/Driver/${id}`);
         if (!response.ok) {
           throw new Error('Failed to fetch driver details');
         }

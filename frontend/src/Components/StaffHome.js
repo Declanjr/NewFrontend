@@ -20,7 +20,7 @@ const StaffHome = () => {
         <h1>Welcome to the Staff Dashboard</h1>
         <div className="button-group">
           <a href="/Driver" className="btn btn-primary">View Drivers</a>
-          <a href="/shipments/index" className="btn btn-secondary">View Shipments</a>
+          <a href="/shipments" className="btn btn-secondary">View Shipments</a>
         </div>
       </div>
     </div>

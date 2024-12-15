@@ -10,6 +10,8 @@ import CreateDriver from "./Pages/DriverCreate"
 import NotFound from "./Pages/404";
 import ProtectedRoute from "./Routes/ProtectedRoute";
 import DriverEdit from "./Pages/DriverEdit";
+import AddShipment from "./Components/ShipmentCreate";
+import Shipment from "./Pages/ShipmentDisplay";
 
 function App() {
   return (
@@ -47,6 +49,19 @@ function App() {
             <DriverEdit />
           </ProtectedRoute>
           } />
+
+        <Route path="/add-shipment" element={
+          <ProtectedRoute>
+            <AddShipment />
+          </ProtectedRoute>
+          } />
+
+        <Route path="/shipments" element={
+          <ProtectedRoute>
+            <Shipment />
+          </ProtectedRoute>
+          } />
+
           
         {/* Default Route */}
         <Route path="*" element={<NotFound />} />
